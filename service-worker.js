@@ -1,11 +1,10 @@
-const CACHE_NAME = "einkaufsliste-v8";
+const CACHE_NAME = "einkaufsliste-v9";
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./manifest.json",
 
-"./icons/ananas.png",
 "./icons/apfel.png",
 "./icons/apfelmus.png",
 "./icons/backpulver.png",
@@ -30,6 +29,7 @@ const urlsToCache = [
 "./icons/dice4.png",
 "./icons/dice5.png",
 "./icons/dice6.png",
+"./icons/dosenananas.png",
 "./icons/dosenmais.png",
 "./icons/dosenpfirsiche.png",
 "./icons/dosentomaten.png",
