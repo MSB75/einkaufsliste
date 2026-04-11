@@ -1,4 +1,4 @@
-const CACHE_NAME = "einkaufsliste-v7";
+const CACHE_NAME = "einkaufsliste-v8";
 
 const urlsToCache = [
   "./",
