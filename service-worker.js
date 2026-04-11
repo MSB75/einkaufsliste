@@ -35,6 +35,7 @@ const urlsToCache = [
 "./icons/dosentomaten.png",
 "./icons/eier.png",
 "./icons/emmentaler.png",
+"./icons/erbsen.png",
 "./icons/erdbeeren.png",
 "./icons/essig.png",
 "./icons/feta.png",
