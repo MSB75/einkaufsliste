@@ -431,7 +431,7 @@ let isListening = false;
 const data = {
 "Milchprodukte":{class:"milch",items:[["Butter","butter"],["Crème Fine","creme_fine"],["Crème Fraîche","creme_fraiche"],["Emmentaler","emmentaler"],["Feta","feta"],["Frischkäse","frischkaese"],["Joghurt","joghurt"],["Käse","kaese"],["Mascarpone","mascarpone"],["Milch","milch"],["Mozzarella","mozzarella"],["Parmesan","parmesan"],["Quark","quark"],["Saure Sahne","saure_sahne"],["Schlagsahne","schlagsahne"],["Schmand","schmand"]]},
 "Gemüse":{class:"gemuese",items:[["Blumenkohl","blumenkohl"],["Brokkoli","brokkoli"],["Champignons","champignons"],["Erbsen","erbsen"],["Gurke","gurke"],["Karotten","karotte"],["Kartoffeln","kartoffeln"],["Knoblauch","knoblauch"],["Kürbis","kuerbis"],["Lauch","lauch"],["Paprika","paprika"],["Salat","salat"],["Spinat","spinat"],["Tomaten","tomate"],["Zucchini","zucchini"],["Zwiebeln","zwiebel"]]},
-"Obst":{class:"obst",items:[["Äpfel","apfel"],["Banane","banane"],["Birne","birne"],["Erdbeeren","erdbeeren"],["Kiwi","kiwi"],["Mandarinen","mandarinen"],["Nektarine","nektarine"],["Trauben","trauben"],["Zitrone","zitrone"]]},
+"Obst":{class:"obst",items:[["Apfel","apfel"],["Banane","banane"],["Birne","birne"],["Erdbeeren","erdbeeren"],["Kiwi","kiwi"],["Mandarinen","mandarinen"],["Nektarine","nektarine"],["Trauben","trauben"],["Zitrone","zitrone"]]},
 "Fleisch":{class:"fleisch",items:[["Hackfleisch","hackfleisch"],["Speckwürfel","speckwuerfel"]]},
 "Wurst":{class:"wurst",items:[["Grillwürstchen","grillwuerstchen"],["Leberwurst","leberwurst"],["Mortadella","mortadella"],["Salami","salami"],["Teewurst","teewurst"],["Wiener","wiener"]]},
 "Fisch & Ei":{class:"fisch",items:[["Eier","eier"],["Fischstäbchen","fischstaebchen"],["Thunfisch","thunfisch"],["TK Lachs","tk_lachs"]]},
@@ -497,10 +497,27 @@ function addCustomItem(){
 }
 
 // ── Sprechen ───────────────────────────────────────────────
+// Phonetische Ersetzungen für korrekte Aussprache
+const pronunciationMap = {
+  "crème fraîche": { text: "Krem fresch", lang: "de-DE" },
+  "crème fine":    { text: "Krem feen",   lang: "de-DE" },
+  "feta":          { text: "Feeta",       lang: "de-DE" },
+  "nektarine":     { text: "Nektariene",  lang: "de-DE" },
+  "tk lachs":      { text: "Tiefkühl Lachs", lang: "de-DE" },
+};
+
+function applyPronunciation(text){
+  let result = text;
+  for(const [word, replacement] of Object.entries(pronunciationMap)){
+    result = result.replace(new RegExp(word, "gi"), replacement.text);
+  }
+  return result;
+}
+
 function speak(text){
-  let s = new SpeechSynthesisUtterance(text);
-  s.lang = "de-DE";
   speechSynthesis.cancel();
+  const s = new SpeechSynthesisUtterance(applyPronunciation(text));
+  s.lang = "de-DE";
   speechSynthesis.speak(s);
 }
 
@@ -524,7 +541,12 @@ function createUI(){
         </div>
         <div class="label">${name}</div>
       `;
-      el.onclick = ()=>{ cart.push({name,file}); updateCart(); speak(name); };
+      el.onclick = ()=>{
+        cart.push({name,file});
+        updateCart();
+        const count = cart.filter(x => x.name === name).length;
+        speak((count === 1 ? "einmal" : count + " mal") + " " + name);
+      };
       items.appendChild(el);
     });
     div.appendChild(h);
@@ -657,7 +679,16 @@ function clearList(){
 
 // ── Vorlesen ───────────────────────────────────────────────
 function speakList(){
-  speak("Du brauchst: " + cart.map(i=>i.name).join(", "));
+  if(cart.length === 0){ speak("Die Liste ist leer."); return; }
+  const counts = {};
+  cart.forEach(i => { counts[i.name] = (counts[i.name]||0) + 1; });
+  const parts = Object.entries(counts).map(([name, count]) =>
+    (count === 1 ? "einmal" : count + " mal") + " " + applyPronunciation(name)
+  );
+  speechSynthesis.cancel();
+  const s = new SpeechSynthesisUtterance("Du brauchst: " + parts.join(", "));
+  s.lang = "de-DE";
+  speechSynthesis.speak(s);
 }
 
 createUI();
