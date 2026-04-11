@@ -20,20 +20,27 @@ header {
   text-align:center;
   padding:18px;
   font-size:1.8em;
+  position:relative;
+  z-index:20;
+  width:100%;
+  box-sizing:border-box;
 }
 
 .container {
   display:flex;
   flex-wrap:wrap;
+  align-items:flex-start;
+  min-height:100vh;
 }
 
 .categories { width:60%; padding:10px; }
-.cart { width:40%; background:#fff; padding:10px; }
+.cart { width:40%; background:#E8F5E9; padding:10px; }
 
 .category {
   margin-bottom:14px;
-  border-radius:16px;
-  overflow:hidden;
+  display:inline-block;
+  width:100%;
+  background:transparent;
 }
 
 .category h2 {
@@ -41,6 +48,9 @@ header {
   margin:0;
   padding:12px;
   font-size:1.3em;
+  border-radius:16px 16px 0 0;
+  display:table;
+  box-sizing:border-box;
 }
 
 .items {
@@ -59,7 +69,7 @@ header {
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  border:2px solid #ddd;
+  border:2px solid transparent;
   transition: transform 0.1s, box-shadow 0.1s;
 }
 
@@ -290,6 +300,7 @@ header {
 .speak-btn { background:#2196F3; color:white; }
 .clear-btn { background:#212121; color:white; }
 
+/* Kategoriebalken (h2) Farben */
 .milch{background:#64B5F6;}
 .gemuese{background:#81C784;}
 .obst{background:#FFB74D;}
@@ -302,12 +313,39 @@ header {
 .suess{background:#F06292;}
 .sonstiges{background:#BDBDBD;}
 
+/* Artikelkarten: weiß */
+.category .item { background:#ffffff !important; border-color:#ddd !important; }
+
 @media (min-width: 768px) and (max-width: 1180px) {
   .categories { width:65%; }
-  .cart { width:35%; }
+  .cart {
+    width:35%;
+    position:fixed;
+    top:0;
+    right:0;
+    height:100vh;
+    overflow-y:auto;
+    box-sizing:border-box;
+    box-shadow:-4px 0 12px rgba(0,0,0,0.08);
+  }
   .item { width:110px; height:135px; margin:6px; }
   .item-img-wrap { width:75px; height:75px; }
   .item img { max-width:75px; max-height:75px; }
+}
+
+/* Desktop: fixed cart */
+@media (min-width: 1181px) {
+  .categories { width:60%; }
+  .cart {
+    width:40%;
+    position:fixed;
+    top:0;
+    right:0;
+    height:100vh;
+    overflow-y:auto;
+    box-sizing:border-box;
+    box-shadow:-4px 0 12px rgba(0,0,0,0.08);
+  }
 }
 
 @media(max-width:767px){
@@ -471,7 +509,7 @@ function createUI(){
   const c = document.getElementById("categories");
   for(let cat in data){
     let div = document.createElement("div");
-    div.className = "category";
+    div.className = "category " + data[cat].class;
     let h = document.createElement("h2");
     h.className = data[cat].class;
     h.innerText = cat;
