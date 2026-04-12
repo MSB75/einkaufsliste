@@ -354,6 +354,69 @@ header {
   .item-img-wrap { width:70px; height:70px; }
   .item img { max-width:70px; max-height:70px; }
 }
+
+/* ── Zoom-Overlay ────────────────────────────────────────── */
+#zoom-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.65);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:20px;
+}
+
+#zoom-overlay.active {
+  display:flex;
+}
+
+#zoom-box {
+  background:white;
+  border-radius:24px;
+  padding:30px 30px 20px 30px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.35);
+  position:relative;
+}
+
+#zoom-box img {
+  width:220px;
+  height:220px;
+  object-fit:contain;
+}
+
+#zoom-label {
+  font-size:1.6em;
+  font-weight:bold;
+  text-align:center;
+}
+
+#zoom-add-btn {
+  background:#4CAF50;
+  color:white;
+  border:none;
+  border-radius:16px;
+  padding:18px 40px;
+  font-size:1.3em;
+  font-weight:bold;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition: filter 0.15s;
+}
+
+#zoom-add-btn:active { filter:brightness(0.85); }
+
+#zoom-add-btn svg {
+  width:28px;
+  height:28px;
+}
 </style>
 </head>
 
@@ -521,6 +584,33 @@ function speak(text){
   speechSynthesis.speak(s);
 }
 
+// ── Zoom-Overlay ──────────────────────────────────────────
+let zoomName = null;
+let zoomFile = null;
+
+function openZoom(name, file){
+  zoomName = name;
+  zoomFile = file;
+  document.getElementById("zoom-img").src = imgPath + file + ".png";
+  document.getElementById("zoom-label").innerText = name;
+  document.getElementById("zoom-overlay").classList.add("active");
+}
+
+function closeZoom(event){
+  document.getElementById("zoom-overlay").classList.remove("active");
+  zoomName = null;
+  zoomFile = null;
+}
+
+function zoomAdd(){
+  if(!zoomName) return;
+  cart.push({name:zoomName, file:zoomFile});
+  updateCart();
+  const count = cart.filter(x => x.name === zoomName).length;
+  speak((count === 1 ? "einmal" : count + " mal") + " " + zoomName);
+  closeZoom();
+}
+
 // ── UI aufbauen ────────────────────────────────────────────
 function createUI(){
   const c = document.getElementById("categories");
@@ -541,12 +631,7 @@ function createUI(){
         </div>
         <div class="label">${name}</div>
       `;
-      el.onclick = ()=>{
-        cart.push({name,file});
-        updateCart();
-        const count = cart.filter(x => x.name === name).length;
-        speak((count === 1 ? "einmal" : count + " mal") + " " + name);
-      };
+      el.onclick = ()=>{ openZoom(name, file); };
       items.appendChild(el);
     });
     div.appendChild(h);
@@ -648,7 +733,70 @@ function printList(){
       font-weight:bold;cursor:pointer;margin-bottom:20px;}
     .back-btn:hover{background:#388E3C;}
     @media print{.back-btn{display:none;}}
-  </style></head><body>
+  
+/* ── Zoom-Overlay ────────────────────────────────────────── */
+#zoom-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.65);
+  z-index:1000;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:20px;
+}
+
+#zoom-overlay.active {
+  display:flex;
+}
+
+#zoom-box {
+  background:white;
+  border-radius:24px;
+  padding:30px 30px 20px 30px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:16px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.35);
+  position:relative;
+}
+
+#zoom-box img {
+  width:220px;
+  height:220px;
+  object-fit:contain;
+}
+
+#zoom-label {
+  font-size:1.6em;
+  font-weight:bold;
+  text-align:center;
+}
+
+#zoom-add-btn {
+  background:#4CAF50;
+  color:white;
+  border:none;
+  border-radius:16px;
+  padding:18px 40px;
+  font-size:1.3em;
+  font-weight:bold;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition: filter 0.15s;
+}
+
+#zoom-add-btn:active { filter:brightness(0.85); }
+
+#zoom-add-btn svg {
+  width:28px;
+  height:28px;
+}
+</style></head><body>
   <button class="back-btn" onclick="window.close()">${homeIcon} Zurück zur Einkaufsliste</button>
   <h1>🛒 Einkaufsliste</h1><div>`;
 
@@ -665,7 +813,23 @@ function printList(){
     </div>`;
   }
 
-  html += `</div></body></html>`;
+  html += `</div>
+<!-- Zoom-Overlay -->
+<div id="zoom-overlay" onclick="closeZoom(event)">
+  <div id="zoom-box" onclick="event.stopPropagation()">
+    <img id="zoom-img" src="" alt="">
+    <div id="zoom-label"></div>
+    <button id="zoom-add-btn" onclick="zoomAdd()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Hinzufügen
+    </button>
+  </div>
+</div>
+</body></html>`;
   w.document.write(html);
   w.document.close();
   w.print();
@@ -698,5 +862,21 @@ if('serviceWorker' in navigator){
 }
 </script>
 
+
+<!-- Zoom-Overlay -->
+<div id="zoom-overlay" onclick="closeZoom(event)">
+  <div id="zoom-box" onclick="event.stopPropagation()">
+    <img id="zoom-img" src="" alt="">
+    <div id="zoom-label"></div>
+    <button id="zoom-add-btn" onclick="zoomAdd()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Hinzufügen
+    </button>
+  </div>
+</div>
 </body>
 </html>
