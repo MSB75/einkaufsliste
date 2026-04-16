@@ -453,15 +453,83 @@ header {
     </div>
 
     <div class="action-buttons">
-      <button class="action-btn print-btn" onclick="printList()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="6 9 6 2 18 2 18 9"/>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-          <rect x="6" y="14" width="12" height="8"/>
-        </svg>
-        Drucken
-      </button>
+    <!-- 1. Button: Drucker → Pfeil → Schrift -->
+<button class="action-btn print-btn" onclick="printList('text')">
+  <!-- Drucker -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+    stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="6 9 6 2 18 2 18 9"/>
+    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+    <rect x="6" y="14" width="12" height="8"/>
+  </svg>
+
+  <!-- Pfeil -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+    <polyline points="12 5 19 12 12 19"/>
+  </svg>
+
+  <!-- Textsymbol (Linien) -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="4" y1="6" x2="20" y2="6"/>
+    <line x1="4" y1="12" x2="20" y2="12"/>
+    <line x1="4" y1="18" x2="14" y2="18"/>
+  </svg>
+</button>
+
+<!-- 2. Button: Drucker → Pfeil → Bild -->
+<button class="action-btn print-btn" onclick="printList('images')">
+  <!-- Drucker -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="6 9 6 2 18 2 18 9"/>
+    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+    <rect x="6" y="14" width="12" height="8"/>
+  </svg>
+
+  <!-- Pfeil -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+    <polyline points="12 5 19 12 12 19"/>
+  </svg>
+
+  <!-- Bildsymbol -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <circle cx="8.5" cy="8.5" r="1.5"/>
+    <polyline points="21 15 16 10 5 21"/>
+  </svg>
+</button>
+
+<!-- 3. Button: Drucker → Pfeil → Bild + Würfel -->
+<button class="action-btn print-btn" onclick="printList('both')">
+  <!-- Drucker -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <polyline points="6 9 6 2 18 2 18 9"/>
+    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+    <rect x="6" y="14" width="12" height="8"/>
+  </svg>
+
+  <!-- Pfeil -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <line x1="5" y1="12" x2="19" y2="12"/>
+    <polyline points="12 5 19 12 12 19"/>
+  </svg>
+
+  <!-- Bildsymbol -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <circle cx="8.5" cy="8.5" r="1.5"/>
+    <polyline points="21 15 16 10 5 21"/>
+  </svg>
+
+  <!-- Würfel (einfach dargestellt) -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="4" y="4" width="16" height="16" rx="3"/>
+    <circle cx="9" cy="9" r="1"/>
+    <circle cx="15" cy="15" r="1"/>
+  </svg>
+</button>
+
       <button class="action-btn speak-btn" onclick="speakList()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
@@ -703,7 +771,9 @@ function updateCart(){
 }
 
 // ── Drucken ────────────────────────────────────────────────
-function printList(){
+function printList(mode){
+  if(cart.length === 0) return;
+
   let counts = {};
   cart.forEach(i=>{
     if(!counts[i.name]) counts[i.name] = {count:0, file:i.file, custom:i.custom||false};
@@ -720,8 +790,22 @@ function printList(){
     return html;
   }
 
+  function getArticleImages(file, n){
+    let html = "";
+    for(let i=0; i<n; i++){
+      html += `<img src="${imgPath}${file}.png" style="width:70px;height:70px;margin-left:6px;object-fit:contain;">`;
+    }
+    return html;
+  }
+
   let w = window.open("");
   const homeIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:8px"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+
+  const titles = {
+    text:   "Nur Schrift",
+    images: "Nur Bilder",
+    both:   "Bild + Würfel"
+  };
 
   let html = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">
   <title>Einkaufsliste – Druckansicht</title>
@@ -732,104 +816,47 @@ function printList(){
       border:none;border-radius:12px;padding:12px 20px;font-size:1.05em;
       font-weight:bold;cursor:pointer;margin-bottom:20px;}
     .back-btn:hover{background:#388E3C;}
+    .row{display:flex;align-items:center;padding:12px 0;border-bottom:2px solid #ccc;flex-wrap:wrap;gap:6px;}
     @media print{.back-btn{display:none;}}
-  
-/* ── Zoom-Overlay ────────────────────────────────────────── */
-#zoom-overlay {
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.65);
-  z-index:1000;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  gap:20px;
-}
-
-#zoom-overlay.active {
-  display:flex;
-}
-
-#zoom-box {
-  background:white;
-  border-radius:24px;
-  padding:30px 30px 20px 30px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:16px;
-  box-shadow:0 8px 40px rgba(0,0,0,0.35);
-  position:relative;
-}
-
-#zoom-box img {
-  width:220px;
-  height:220px;
-  object-fit:contain;
-}
-
-#zoom-label {
-  font-size:1.6em;
-  font-weight:bold;
-  text-align:center;
-}
-
-#zoom-add-btn {
-  background:#4CAF50;
-  color:white;
-  border:none;
-  border-radius:16px;
-  padding:18px 40px;
-  font-size:1.3em;
-  font-weight:bold;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  transition: filter 0.15s;
-}
-
-#zoom-add-btn:active { filter:brightness(0.85); }
-
-#zoom-add-btn svg {
-  width:28px;
-  height:28px;
-}
-</style></head><body>
+  </style></head><body>
   <button class="back-btn" onclick="window.close()">${homeIcon} Zurück zur Einkaufsliste</button>
-  <h1>🛒 Einkaufsliste</h1><div>`;
+  <h1>🛒 Einkaufsliste – ${titles[mode]}</h1><div>`;
 
   for(let name in counts){
     let item = counts[name];
-    let imgHtml = item.custom
-      ? `<div style="width:80px;height:80px;margin-right:20px;flex-shrink:0;"></div>`
-      : `<img src="${imgPath}${item.file}.png" style="width:80px;height:80px;margin-right:20px;object-fit:contain;">`;
 
-    html += `<div style="display:flex;align-items:center;padding:12px 0;border-bottom:2px solid #ccc;">
-      ${imgHtml}
-      <div style="flex:1;font-size:22px">${item.count}x ${name}</div>
-      <div style="display:flex;align-items:center">${getDiceImages(item.count)}</div>
-    </div>`;
+    if(mode === 'text'){
+      // Nur Schrift
+      html += `<div class="row">
+        <div style="font-size:24px;flex:1">${item.count}x ${name}</div>
+      </div>`;
+
+    } else if(mode === 'images'){
+      // Nur Bilder: Artikelbild n-mal nebeneinander
+      const imgs = item.custom
+        ? `<div style="width:70px;height:70px;margin-right:6px;display:inline-flex;align-items:center;
+            justify-content:center;background:#fff3e0;border-radius:8px;font-size:11px;
+            text-align:center;padding:4px;box-sizing:border-box;">${name}</div>`.repeat(item.count)
+        : getArticleImages(item.file, item.count);
+      html += `<div class="row" style="flex-direction:column;align-items:flex-start;">
+        <div style="font-size:16px;font-weight:bold;margin-bottom:6px;">${name}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">${imgs}</div>
+      </div>`;
+
+    } else {
+      // Bild + Würfel
+      const imgHtml = item.custom
+        ? `<div style="width:80px;height:80px;margin-right:20px;flex-shrink:0;"></div>`
+        : `<img src="${imgPath}${item.file}.png" style="width:80px;height:80px;margin-right:20px;object-fit:contain;flex-shrink:0;">`;
+      html += `<div class="row">
+        ${imgHtml}
+        <div style="flex:1;font-size:22px">${item.count}x ${name}</div>
+        <div style="display:flex;align-items:center;flex-wrap:wrap;">${getDiceImages(item.count)}</div>
+      </div>`;
+    }
   }
 
-  html += `</div>
-<!-- Zoom-Overlay -->
-<div id="zoom-overlay" onclick="closeZoom(event)">
-  <div id="zoom-box" onclick="event.stopPropagation()">
-    <img id="zoom-img" src="" alt="">
-    <div id="zoom-label"></div>
-    <button id="zoom-add-btn" onclick="zoomAdd()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-        stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      Hinzufügen
-    </button>
-  </div>
-</div>
-</body></html>`;
+  html += `</div></body></html>`;
   w.document.write(html);
   w.document.close();
   w.print();
