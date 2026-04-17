@@ -417,6 +417,64 @@ header {
   width:28px;
   height:28px;
 }
+
+/* ── Druckmenü-Overlay ───────────────────────────────────── */
+#print-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  z-index:1100;
+  align-items:center;
+  justify-content:center;
+}
+#print-overlay.active { display:flex; }
+
+#print-box {
+  background:white;
+  border-radius:24px;
+  padding:28px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.3);
+  min-width:280px;
+  max-width:90vw;
+}
+#print-box h3 {
+  margin:0 0 4px 0;
+  font-size:1.2em;
+  text-align:center;
+  color:#333;
+}
+.print-mode-btn {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px 18px;
+  border:none;
+  border-radius:14px;
+  font-size:1.05em;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+  transition: filter 0.15s, transform 0.1s;
+}
+.print-mode-btn:active { filter:brightness(0.88); transform:scale(0.97); }
+.print-mode-btn svg { width:24px; height:24px; flex-shrink:0; }
+.print-mode-text   { background:#5C6BC0; }
+.print-mode-images { background:#26A69A; }
+.print-mode-both   { background:#EF6C00; }
+#print-cancel {
+  background:none;
+  border:2px solid #ccc;
+  border-radius:12px;
+  padding:10px;
+  font-size:0.95em;
+  cursor:pointer;
+  color:#666;
+}
+#print-cancel:hover { background:#f5f5f5; }
 </style>
 </head>
 
@@ -453,83 +511,7 @@ header {
     </div>
 
     <div class="action-buttons">
-    <!-- 1. Button: Drucker → Pfeil → Schrift -->
-<button class="action-btn print-btn" onclick="printList('text')">
-  <!-- Drucker -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-    stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="6 9 6 2 18 2 18 9"/>
-    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-    <rect x="6" y="14" width="12" height="8"/>
-  </svg>
-
-  <!-- Pfeil -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <line x1="5" y1="12" x2="19" y2="12"/>
-    <polyline points="12 5 19 12 12 19"/>
-  </svg>
-
-  <!-- Textsymbol (Linien) -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <line x1="4" y1="6" x2="20" y2="6"/>
-    <line x1="4" y1="12" x2="20" y2="12"/>
-    <line x1="4" y1="18" x2="14" y2="18"/>
-  </svg>
-</button>
-
-<!-- 2. Button: Drucker → Pfeil → Bild -->
-<button class="action-btn print-btn" onclick="printList('images')">
-  <!-- Drucker -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <polyline points="6 9 6 2 18 2 18 9"/>
-    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-    <rect x="6" y="14" width="12" height="8"/>
-  </svg>
-
-  <!-- Pfeil -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <line x1="5" y1="12" x2="19" y2="12"/>
-    <polyline points="12 5 19 12 12 19"/>
-  </svg>
-
-  <!-- Bildsymbol -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <circle cx="8.5" cy="8.5" r="1.5"/>
-    <polyline points="21 15 16 10 5 21"/>
-  </svg>
-</button>
-
-<!-- 3. Button: Drucker → Pfeil → Bild + Würfel -->
-<button class="action-btn print-btn" onclick="printList('both')">
-  <!-- Drucker -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <polyline points="6 9 6 2 18 2 18 9"/>
-    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-    <rect x="6" y="14" width="12" height="8"/>
-  </svg>
-
-  <!-- Pfeil -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <line x1="5" y1="12" x2="19" y2="12"/>
-    <polyline points="12 5 19 12 12 19"/>
-  </svg>
-
-  <!-- Bildsymbol -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <circle cx="8.5" cy="8.5" r="1.5"/>
-    <polyline points="21 15 16 10 5 21"/>
-  </svg>
-
-  <!-- Würfel (einfach dargestellt) -->
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <rect x="4" y="4" width="16" height="16" rx="3"/>
-    <circle cx="9" cy="9" r="1"/>
-    <circle cx="15" cy="15" r="1"/>
-  </svg>
-</button>
-
+      <!-- Vorlesen -->
       <button class="action-btn speak-btn" onclick="speakList()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
@@ -539,6 +521,17 @@ header {
         </svg>
         Vorlesen
       </button>
+      <!-- Drucken: ein Button öffnet Auswahl -->
+      <button class="action-btn print-btn" onclick="openPrintMenu()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Drucken
+      </button>
+      <!-- Liste löschen -->
       <button class="action-btn clear-btn" onclick="clearList()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
@@ -770,6 +763,15 @@ function updateCart(){
   });
 }
 
+// ── Druckmenü ─────────────────────────────────────────────
+function openPrintMenu(){
+  if(cart.length === 0){ speak("Die Liste ist leer."); return; }
+  document.getElementById("print-overlay").classList.add("active");
+}
+function closePrintMenu(event){
+  document.getElementById("print-overlay").classList.remove("active");
+}
+
 // ── Drucken ────────────────────────────────────────────────
 function printList(mode){
   if(cart.length === 0) return;
@@ -818,7 +820,65 @@ function printList(mode){
     .back-btn:hover{background:#388E3C;}
     .row{display:flex;align-items:center;padding:12px 0;border-bottom:2px solid #ccc;flex-wrap:wrap;gap:6px;}
     @media print{.back-btn{display:none;}}
-  </style></head><body>
+  
+/* ── Druckmenü-Overlay ───────────────────────────────────── */
+#print-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  z-index:1100;
+  align-items:center;
+  justify-content:center;
+}
+#print-overlay.active { display:flex; }
+
+#print-box {
+  background:white;
+  border-radius:24px;
+  padding:28px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.3);
+  min-width:280px;
+  max-width:90vw;
+}
+#print-box h3 {
+  margin:0 0 4px 0;
+  font-size:1.2em;
+  text-align:center;
+  color:#333;
+}
+.print-mode-btn {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:16px 18px;
+  border:none;
+  border-radius:14px;
+  font-size:1.05em;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+  transition: filter 0.15s, transform 0.1s;
+}
+.print-mode-btn:active { filter:brightness(0.88); transform:scale(0.97); }
+.print-mode-btn svg { width:24px; height:24px; flex-shrink:0; }
+.print-mode-text   { background:#5C6BC0; }
+.print-mode-images { background:#26A69A; }
+.print-mode-both   { background:#EF6C00; }
+#print-cancel {
+  background:none;
+  border:2px solid #ccc;
+  border-radius:12px;
+  padding:10px;
+  font-size:0.95em;
+  cursor:pointer;
+  color:#666;
+}
+#print-cancel:hover { background:#f5f5f5; }
+</style></head><body>
   <button class="back-btn" onclick="window.close()">${homeIcon} Zurück zur Einkaufsliste</button>
   <h1>🛒 Einkaufsliste – ${titles[mode]}</h1><div>`;
 
@@ -856,7 +916,43 @@ function printList(mode){
     }
   }
 
-  html += `</div></body></html>`;
+  html += `</div>
+<!-- Druckmenü-Overlay -->
+<div id="print-overlay" onclick="closePrintMenu(event)">
+  <div id="print-box" onclick="event.stopPropagation()">
+    <h3>🖨️ Druckoption wählen</h3>
+    <button class="print-mode-btn print-mode-text" onclick="printList('text')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="18" x2="14" y2="18"/>
+      </svg>
+      Nur Schrift
+    </button>
+    <button class="print-mode-btn print-mode-images" onclick="printList('images')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      Nur Bilder
+    </button>
+    <button class="print-mode-btn print-mode-both" onclick="printList('both')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="3"/>
+        <circle cx="9" cy="9" r="1" fill="currentColor"/>
+        <circle cx="15" cy="15" r="1" fill="currentColor"/>
+      </svg>
+      Bild + Würfel
+    </button>
+    <button id="print-cancel" onclick="closePrintMenu()">Abbrechen</button>
+  </div>
+</div>
+</body></html>`;
+  closePrintMenu();
   w.document.write(html);
   w.document.close();
   w.print();
@@ -903,6 +999,41 @@ if('serviceWorker' in navigator){
       </svg>
       Hinzufügen
     </button>
+  </div>
+</div>
+
+<!-- Druckmenü-Overlay -->
+<div id="print-overlay" onclick="closePrintMenu(event)">
+  <div id="print-box" onclick="event.stopPropagation()">
+    <h3>🖨️ Druckoption wählen</h3>
+    <button class="print-mode-btn print-mode-text" onclick="printList('text')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="18" x2="14" y2="18"/>
+      </svg>
+      Nur Schrift
+    </button>
+    <button class="print-mode-btn print-mode-images" onclick="printList('images')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      Nur Bilder
+    </button>
+    <button class="print-mode-btn print-mode-both" onclick="printList('both')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="4" width="16" height="16" rx="3"/>
+        <circle cx="9" cy="9" r="1" fill="currentColor"/>
+        <circle cx="15" cy="15" r="1" fill="currentColor"/>
+      </svg>
+      Bild + Würfel
+    </button>
+    <button id="print-cancel" onclick="closePrintMenu()">Abbrechen</button>
   </div>
 </div>
 </body>
