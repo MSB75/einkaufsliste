@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Einkaufsliste</title>
+<title>Einkaufsliste SB-Laden Hephata</title>
 
 <link rel="manifest" href="manifest.json">
 
@@ -46,16 +46,47 @@ header {
 .category h2 {
   color:white;
   margin:0;
-  padding:12px;
+  padding:12px 16px;
   font-size:1.3em;
-  border-radius:16px 16px 0 0;
-  display:table;
   box-sizing:border-box;
+  width:100%;
 }
 
 .items {
   display:flex;
   flex-wrap:wrap;
+  overflow:hidden;
+  max-height:0;
+  transition: max-height 0.35s ease;
+}
+
+.category.open .items {
+  max-height:2000px;
+}
+
+.category h2 {
+  cursor:pointer;
+  user-select:none;
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+  border-radius:16px !important;
+  transition: border-radius 0.1s;
+}
+
+.category.open h2 {
+  border-radius:16px 16px 0 0 !important;
+}
+
+.category h2 .chevron {
+  margin-left:auto;
+  font-size:0.8em;
+  transition: transform 0.3s;
+  display:inline-block;
+}
+
+.category.open h2 .chevron {
+  transform: rotate(180deg);
 }
 
 .item {
@@ -480,7 +511,7 @@ header {
 
 <body>
 
-<header>Einkaufsliste</header>
+<header>🛒 Einkaufsliste für SB-Laden Hephata</header>
 
 <div class="container">
   <div class="categories" id="categories"></div>
@@ -672,15 +703,38 @@ function zoomAdd(){
   closeZoom();
 }
 
+// ── Kategorie-Emojis ──────────────────────────────────────
+const categoryEmojis = {
+  "Milchprodukte":           "🥛",
+  "Gemüse":                  "🥦",
+  "Obst":                    "🍎",
+  "Fleisch":                 "🥩",
+  "Wurst":                   "🌭",
+  "Fisch & Ei":              "🐟",
+  "Konserven":               "🥫",
+  "Getreide & Hülsenfrüchte":"🌾",
+  "Gewürze & Öl":            "🧂",
+  "Süßes":                   "🍬",
+  "Sonstiges":               "🛒",
+};
+
 // ── UI aufbauen ────────────────────────────────────────────
 function createUI(){
   const c = document.getElementById("categories");
   for(let cat in data){
     let div = document.createElement("div");
     div.className = "category " + data[cat].class;
+
     let h = document.createElement("h2");
     h.className = data[cat].class;
-    h.innerText = cat;
+    const emoji = categoryEmojis[cat] || "📦";
+    h.innerHTML = `<span>${emoji} ${cat}</span><span class="chevron">▼</span>`;
+
+    // Toggle open/close
+    h.onclick = () => {
+      div.classList.toggle("open");
+    };
+
     let items = document.createElement("div");
     items.className = "items";
     data[cat].items.forEach(([name,file])=>{
