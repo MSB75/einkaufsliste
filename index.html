@@ -448,6 +448,38 @@ header {
   padding:10px; font-size:0.95em; cursor:pointer; color:#666;
 }
 #print-cancel:hover { background:#f5f5f5; }
+
+/* ── Ausklappbare Kategorien ─────────────────────────────── */
+.items {
+  overflow:hidden;
+  max-height:0;
+  transition: max-height 0.35s ease;
+}
+.category.open .items {
+  max-height:3000px;
+}
+.category h2 {
+  cursor:pointer;
+  user-select:none;
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+  border-radius:16px !important;
+  transition: border-radius 0.2s;
+}
+.category.open h2 {
+  border-radius:16px 16px 0 0 !important;
+}
+.chevron {
+  margin-left:auto;
+  font-style:normal;
+  transition: transform 0.3s;
+  display:inline-block;
+  font-size:0.8em;
+}
+.category.open .chevron {
+  transform: rotate(180deg);
+}
 </style>
 </head>
 
@@ -643,14 +675,32 @@ function zoomAdd(){
 }
 
 // ── UI aufbauen ────────────────────────────────────────────
+const categoryEmojis = {
+  "Milchprodukte":            "🥛",
+  "Gemüse":                   "🥦",
+  "Obst":                     "🍎",
+  "Fleisch":                  "🥩",
+  "Wurst":                    "🌭",
+  "Fisch & Ei":               "🐟",
+  "Konserven":                "🥫",
+  "Getreide & Hülsenfrüchte": "🌾",
+  "Gewürze & Öl":             "🧂",
+  "Süßes":                    "🍬",
+  "Sonstiges":                "🛒",
+};
+
 function createUI(){
   const c = document.getElementById("categories");
   for(let cat in data){
     let div = document.createElement("div");
     div.className = "category " + data[cat].class;
+
     let h = document.createElement("h2");
     h.className = data[cat].class;
-    h.innerText = cat;
+    const emoji = categoryEmojis[cat] || "📦";
+    h.innerHTML = '<span>' + emoji + ' ' + cat + '</span><span class="chevron">▼</span>';
+    h.onclick = () => div.classList.toggle("open");
+
     let items = document.createElement("div");
     items.className = "items";
     data[cat].items.forEach(([name,file])=>{
@@ -797,7 +847,39 @@ function printList(mode){
     + '.row{display:flex;align-items:center;padding:12px 0;border-bottom:2px solid #ccc;flex-wrap:wrap;gap:6px;}'
     + '.btn{display:inline-flex;align-items:center;border:none;border-radius:12px;padding:14px 20px;font-size:1em;font-weight:bold;cursor:pointer;margin:0 8px 16px 0;color:white;}'
     + '.btn-send{background:#4CAF50;}.btn-back{background:#90A4AE;}'
-    + '@media print{.toolbar{display:none;}}</style></head><body>'
+    + '@media print{.toolbar{display:none;}}
+/* ── Ausklappbare Kategorien ─────────────────────────────── */
+.items {
+  overflow:hidden;
+  max-height:0;
+  transition: max-height 0.35s ease;
+}
+.category.open .items {
+  max-height:3000px;
+}
+.category h2 {
+  cursor:pointer;
+  user-select:none;
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+  border-radius:16px !important;
+  transition: border-radius 0.2s;
+}
+.category.open h2 {
+  border-radius:16px 16px 0 0 !important;
+}
+.chevron {
+  margin-left:auto;
+  font-style:normal;
+  transition: transform 0.3s;
+  display:inline-block;
+  font-size:0.8em;
+}
+.category.open .chevron {
+  transform: rotate(180deg);
+}
+</style></head><body>'
     + '<div class="toolbar">'
     + '<button class="btn btn-send" onclick="doShare()">&#x1F4E4; Senden / AirDrop</button>'
     + '<button class="btn btn-back" onclick="window.close()">&#x2190; Zurück</button>'
