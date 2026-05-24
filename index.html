@@ -480,10 +480,109 @@ header {
   padding:10px; font-size:0.95em; cursor:pointer; color:#666;
 }
 #print-cancel:hover { background:#f5f5f5; }
+
+/* ── Datenschutz-Overlay ─────────────────────────────────── */
+#privacy-overlay {
+  display:flex;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.75);
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  box-sizing:border-box;
+}
+#privacy-box {
+  background:white;
+  border-radius:24px;
+  padding:28px;
+  max-width:520px;
+  width:100%;
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 8px 40px rgba(0,0,0,0.4);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+#privacy-box h2 {
+  margin:0;
+  font-size:1.3em;
+  color:#4CAF50;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+#privacy-box h3 {
+  margin:0 0 4px 0;
+  font-size:1em;
+  color:#333;
+}
+#privacy-box p {
+  margin:0;
+  font-size:0.92em;
+  color:#555;
+  line-height:1.5;
+}
+.privacy-section {
+  background:#f9f9f9;
+  border-radius:12px;
+  padding:14px;
+}
+#privacy-accept {
+  background:#4CAF50;
+  color:white;
+  border:none;
+  border-radius:14px;
+  padding:16px;
+  font-size:1.05em;
+  font-weight:bold;
+  cursor:pointer;
+  width:100%;
+  margin-top:4px;
+  transition: filter 0.15s;
+}
+#privacy-accept:hover { filter:brightness(0.92); }
 </style>
 </head>
 
 <body>
+
+
+<!-- Datenschutz-Overlay -->
+<div id="privacy-overlay">
+  <div id="privacy-box">
+    <h2>🔒 Datenschutzinformation</h2>
+
+    <div class="privacy-section">
+      <h3>📱 Datenspeicherung</h3>
+      <p>Diese App speichert <strong>keine persönlichen Daten</strong>. Die Einkaufsliste wird ausschließlich <strong>lokal im Arbeitsspeicher deines Geräts</strong> gehalten und beim Schließen der App automatisch gelöscht. Es werden keine Daten auf externen Servern gespeichert oder übertragen.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h3>☁️ Hosting</h3>
+      <p>Die App wird über <strong>GitHub Pages</strong> bereitgestellt. Beim Laden der Seite werden technische Zugriffsdaten (z. B. IP-Adresse, Zeitstempel) von GitHub Inc. verarbeitet. Dies ist für den Betrieb der Seite technisch notwendig. Weitere Informationen: <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" style="color:#4CAF50;">GitHub Datenschutzerklärung</a>.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h3>📶 Offline-Nutzung</h3>
+      <p>Die App kann nach dem ersten Laden <strong>vollständig offline</strong> genutzt werden. Dazu werden App-Dateien (HTML, Bilder) über einen Service Worker im Cache deines Browsers gespeichert. Diese Daten verbleiben ausschließlich auf deinem Gerät.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h3>🖼️ Bildmaterial & Urheberrecht</h3>
+      <p>Die in dieser App verwendeten Produktabbildungen stammen von <strong>EDEKA</strong>. Alle Rechte an diesen Bildern liegen beim jeweiligen Rechteinhaber. Die Nutzung erfolgt ausschließlich im Rahmen dieser nicht-kommerziellen Anwendung für den SB-Laden Hephata.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h3>🎤 Spracheingabe</h3>
+      <p>Die optionale Spracheingabe nutzt die <strong>Web Speech API</strong> deines Browsers. Sprachdaten werden direkt vom Browser verarbeitet und <strong>nicht von dieser App gespeichert oder weitergeleitet</strong>.</p>
+    </div>
+
+    <button id="privacy-accept" onclick="document.getElementById('privacy-overlay').style.cssText='display:none!important'">✓ Verstanden – App starten</button>
+  </div>
+</div>
 
 <header>Einkaufsliste</header>
 
@@ -889,6 +988,12 @@ function speakList(){
   const s = new SpeechSynthesisUtterance("Du brauchst: " + parts.join(", "));
   s.lang = "de-DE";
   speechSynthesis.speak(s);
+}
+
+// ── Datenschutz ───────────────────────────────────────────
+function acceptPrivacy(){
+  const overlay = document.getElementById("privacy-overlay");
+  overlay.style.display = "none";
 }
 
 createUI();
