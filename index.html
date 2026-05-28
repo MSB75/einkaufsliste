@@ -892,8 +892,26 @@ function closeSendMenu(){
   document.getElementById("print-overlay").classList.remove("active");
 }
 
+// ── Bild → Base64 ─────────────────────────────────────────
+function imgToBase64(src){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      try { resolve(canvas.toDataURL("image/png")); }
+      catch(e) { resolve(src); } // Fallback auf Original-URL
+    };
+    img.onerror = () => resolve(src); // Fallback bei Ladefehler
+    img.src = src;
+  });
+}
+
 // ── Senden ────────────────────────────────────────────────
-function printList(mode){
+async function printList(mode){
   if(cart.length === 0) return;
   closeSendMenu();
 
@@ -903,11 +921,32 @@ function printList(mode){
     counts[i.name].count++;
   });
 
+  // Alle benötigten Bilder vorab in Base64 umwandeln
+  const filesToConvert = new Set();
+  if(mode !== "text"){
+    for(let name in counts){
+      const item = counts[name];
+      if(!item.custom && item.file){
+        filesToConvert.add(item.file);
+      }
+    }
+    // Würfelbilder (1–6) für Modus "both"
+    if(mode === "both"){
+      for(let i=1;i<=6;i++) filesToConvert.add("dice" + i);
+    }
+  }
+
+  const b64cache = {};
+  await Promise.all([...filesToConvert].map(async (file) => {
+    b64cache[file] = await imgToBase64(imgPath + file + ".png");
+  }));
+
   function getDiceImages(n){
     let html = "";
     while(n > 0){
       let v = Math.min(n,6);
-      html += '<img src="' + imgPath + 'dice' + v + '.png" style="width:70px;height:70px;margin-left:6px;object-fit:contain;">';
+      const src = b64cache["dice" + v] || (imgPath + "dice" + v + ".png");
+      html += '<img src="' + src + '" style="width:70px;height:70px;margin-left:6px;object-fit:contain;">';
       n -= v;
     }
     return html;
@@ -915,8 +954,9 @@ function printList(mode){
 
   function getArticleImages(file, n){
     let html = "";
+    const src = b64cache[file] || (imgPath + file + ".png");
     for(let i=0; i<n; i++){
-      html += '<img src="' + imgPath + file + '.png" style="width:70px;height:70px;margin-left:6px;object-fit:contain;">';
+      html += '<img src="' + src + '" style="width:70px;height:70px;margin-left:6px;object-fit:contain;">';
     }
     return html;
   }
@@ -934,9 +974,10 @@ function printList(mode){
         : getArticleImages(item.file, item.count);
       rows += '<div class="row" style="flex-direction:column;align-items:flex-start;"><div style="font-size:16px;font-weight:bold;margin-bottom:6px;">' + name + '</div><div style="display:flex;flex-wrap:wrap;gap:6px;">' + imgs + '</div></div>';
     } else {
+      const src = item.custom ? null : (b64cache[item.file] || (imgPath + item.file + ".png"));
       const imgHtml = item.custom
         ? '<div style="width:80px;height:80px;margin-right:20px;flex-shrink:0;"></div>'
-        : '<img src="' + imgPath + item.file + '.png" style="width:80px;height:80px;margin-right:20px;object-fit:contain;flex-shrink:0;">';
+        : '<img src="' + src + '" style="width:80px;height:80px;margin-right:20px;object-fit:contain;flex-shrink:0;">';
       rows += '<div class="row">' + imgHtml + '<div style="flex:1;font-size:22px">' + item.count + 'x ' + name + '</div><div style="display:flex;align-items:center;flex-wrap:wrap;">' + getDiceImages(item.count) + '</div></div>';
     }
   }
@@ -969,6 +1010,19 @@ function printList(mode){
   w.document.write(pageHTML);
   w.document.close();
 }
+
+// Wrapper: Button-Feedback beim Laden
+(function(){
+  const orig = printList;
+  window.printList = async function(mode){
+    // Alle Modustasten während der Verarbeitung deaktivieren
+    const btns = document.querySelectorAll(".print-mode-btn");
+    btns.forEach(b => { b.disabled = true; b.style.opacity = "0.6"; });
+    try { await orig(mode); } finally {
+      btns.forEach(b => { b.disabled = false; b.style.opacity = ""; });
+    }
+  };
+})();
 
 // ── Liste löschen ─────────────────────────────────────────
 function clearList(){
