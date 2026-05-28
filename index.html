@@ -915,6 +915,10 @@ async function printList(mode){
   if(cart.length === 0) return;
   closeSendMenu();
 
+  // Fenster SOFORT beim User-Klick öffnen (verhindert Pop-up-Blocker),
+  // Inhalt wird danach per document.write() befüllt
+  const w = window.open("");
+
   let counts = {};
   cart.forEach(i=>{
     if(!counts[i.name]) counts[i.name] = {count:0, file:i.file, custom:i.custom||false};
@@ -1006,7 +1010,6 @@ async function printList(mode){
     + '}'
     + '<\/scr' + 'ipt></body></html>';
 
-  const w = window.open("");
   w.document.write(pageHTML);
   w.document.close();
 }
