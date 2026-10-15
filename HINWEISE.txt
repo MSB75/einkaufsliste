@@ -1,0 +1,7 @@
+Einkaufsliste Blau – Version 1.6
+
+Die Funktionen stammen aus index(1)(1).html. Die originale Bildsammlung wurde nicht hochgeladen. Deshalb enthält der Ordner icons/ neutrale blaue Platzhalter. Für echte Produktfotos die gleichnamigen PNG-Dateien in icons/ ersetzen.
+
+Zum Installieren als PWA alle Dateien inklusive icons/ auf HTTPS (z.B. GitHub Pages) hochladen. Service Worker funktionieren nicht beim direkten Öffnen über file://.
+
+Ansicht: Kategorien links (eigener Scrollbereich), Artikel mittig (eigener Scrollbereich), Einkaufsliste rechts (eigener Scrollbereich), A–Z-Zeile darüber.
