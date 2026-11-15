@@ -1,0 +1,14 @@
+ARASAAC-Piktogramme: Sergio Palao; Rechteinhaber: Gobierno de Aragón; Quelle: ARASAAC (arasaac.org); Lizenz: CC BY-NC-SA 4.0. Pesto rot: farblich angepasst.
+https://arasaac.org/terms-of-use
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Die ARASAAC-Piktogramme und ihre Bearbeitung dürfen nur gemäß CC BY-NC-SA 4.0 verwendet werden.
+Die Rechte an den ursprünglichen Produktbildern bleiben unberührt.
+
+Dateien arasaac_<ID>.png: Original-Piktogramme aus der ARASAAC-Sammlung.
+backcamembert.png: ARASAAC-ID 35767
+cocktailtomaten.png: ARASAAC-ID 39638
+pinienkerne.png: ARASAAC-ID 8667
+rucola.png: ARASAAC-ID 35755
+pesto_gruen.png: ARASAAC-ID 39605
+pesto_rot.png: Farbvariante von ARASAAC-ID 39605.
